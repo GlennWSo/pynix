@@ -1,6 +1,6 @@
 export PATH="$coreutils/bin"
 declare -xp
-mkdir $out
-echo "#!$py/bin/python" > $out/hello.py
-cat $src >> $out/hello.py
-chmod 755 $out/hello.py
+mkdir $out/bin -p
+echo "#!$py/bin/python" > $out/bin/hello
+cat $src >> $out/bin/hello
+chmod 755 $out/bin/hello

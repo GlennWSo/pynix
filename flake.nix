@@ -12,16 +12,22 @@
       pkgs = import nixpkgs {
         inherit system;
       };
+      py = pkgs.python312;
       hellopy = with pkgs;
         derivation {
-          inherit system coreutils;
+          inherit system coreutils py;
           name = "hello";
           builder = "${bash}/bin/bash";
-          py = python311;
           src = ./hello.py;
           args = [./builder.sh];
         };
     in {
       packages.default = hellopy;
+      devShells.default = pkgs.mkShell {
+        name = "pyenv";
+        buildInputs = [
+          py
+        ];
+      };
     });
 }
