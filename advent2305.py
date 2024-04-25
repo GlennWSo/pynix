@@ -64,9 +64,8 @@ def test1():
     print("test1 ok")
 
 
-# test1()
-
-with open("test5.txt", "r") as file:
+input = "input5.txt"
+with open(input, "r") as file:
     lines = file.readlines()
 
 
@@ -89,5 +88,4 @@ pos = 3
 while pos < len(lines):
     pos, things = get_next_things(lines, pos, things)
 
-assert min(things) == 35
-print("test2 ok")
+print(f"min location is: {min(things)}")
