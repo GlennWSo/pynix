@@ -64,15 +64,32 @@ def test1():
     print("test1 ok")
 
 
+def range2seeds(ranges: Sequence[int]):
+    starts = ranges[0::2]
+    sizes = ranges[1::2]
+    seeds = []
+    for start, size in zip(starts, sizes):
+        seeds.extend(range(start, start + size))
+    return seeds
+
+
+def test_seeds():
+    ranges = [79, 14, 55, 13]
+    seeds = range2seeds(ranges)
+    print(seeds)
+
+
+# test_seeds()
+
+
 input = "input5.txt"
 with open(input, "r") as file:
     lines = file.readlines()
 
 
 pos = 0
-things = get_row(lines[pos][7:])
-print(things)
-print(lines[2])
+seed_ranges = get_row(lines[pos][7:])
+things = range2seeds(seed_ranges)
 
 
 def get_next_things(lines, pos, things):
@@ -86,6 +103,8 @@ def get_next_things(lines, pos, things):
 pos = 3
 
 while pos < len(lines):
-    pos, things = get_next_things(lines, pos, things)
+    pass
+    # this is to expensive
+    # pos, things = get_next_things(lines, pos, things)
 
 print(f"min location is: {min(things)}")
