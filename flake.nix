@@ -12,7 +12,11 @@
       pkgs = import nixpkgs {
         inherit system;
       };
-      py = pkgs.python312;
+      # py = pkgs.python312;
+      py = pkgs.python311.withPackages (ps: [
+        ps.python-lsp-server
+        ps.black
+      ]);
       hellopy = with pkgs;
         derivation {
           inherit system coreutils py;
