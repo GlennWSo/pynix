@@ -15,112 +15,6 @@ corresponds to soil number 50 and that seed number 99 corresponds to soil number
 from typing import Sequence, Tuple
 
 
-class Line:
-    def __init__(self, dest, source, size):
-        self.dest = dest
-        self.source = source
-        self.size = size
-
-    @classmethod
-    def mk_lines(cls, seq: Sequence[Tuple[int, int, int]]):
-        return [cls(d, s, z) for (d, s, z) in seq]
-
-
-def lines2map(lines: Sequence[Line]):
-    map = {}
-    for line in lines:
-        for i in range(line.size):
-            map[line.source + i] = line.dest + i
-
-    return map
-
-
-class Map:
-    def __init__(self, lines: Sequence[Line]):
-        self.map = lines2map(lines)
-
-    @classmethod
-    def from_seq(cls, seq: Sequence[Tuple[int, int, int]]):
-        return cls(Line.mk_lines(seq))
-
-    def __getitem__(self, i):
-        try:
-            return self.map[i]
-        except KeyError:
-            return i
-
-    def __repr__(self):
-        return repr(self.map)
-
-
-seed2soil = [
-    (50, 98, 2),
-    (52, 50, 48),
-]
-
-map1 = Map.from_seq(seed2soil)
-
-seeds = [
-    0,
-    1,
-    48,
-    49,
-    50,
-    51,
-    96,
-    97,
-    98,
-    99,
-]
-
-for i in seeds:
-    print(f"{i}: {map1[i]}")
-
-assert map1[79] == 81
-assert map1[14] == 14
-assert map1[55] == 57
-assert map1[13] == 13
-
-print("all done!")
-
-
-test_input = """
-seeds: 79 14 55 13
-
-seed-to-soil map:
-50 98 2
-52 50 48
-
-soil-to-fertilizer map:
-0 15 37
-37 52 2
-39 0 15
-
-fertilizer-to-water map:
-49 53 8
-0 11 42
-42 0 7
-57 7 4
-
-water-to-light map:
-88 18 7
-18 25 70
-
-light-to-temperature map:
-45 77 23
-81 45 19
-68 64 13
-
-temperature-to-humidity map:
-0 69 1
-1 0 69
-
-humidity-to-location map:
-60 56 37
-56 93 4
-""".strip()
-
-
 def get_row(txt: str):
     return [int(num) for num in txt.split(" ")]
 
@@ -135,17 +29,65 @@ def get_map_nums(seq: Sequence[str]):
     return i, nums
 
 
-lines = test_input.splitlines()
+class Map:
+
+    def __init__(self, rows: Sequence[Tuple[int, int, int]]):
+        self.rows = rows
+
+    # dest source size
+    def __getitem__(self, i):
+        for dest, source, size in self.rows:
+            if i < source:
+                continue
+            ub = source + size
+            if i < ub:
+                delta = i - source
+                return dest + delta
+        return i
+
+
+def test1():
+    pos = 3
+    lines = test_input.splitlines()
+    i, seed2soil_nums = get_map_nums(lines[pos:])
+    map1 = Map(seed2soil_nums)
+    assert map1[0] == 0
+    assert map1[1] == 1
+    assert map1[48] == 48
+    assert map1[49] == 49
+    assert map1[50] == 52
+    assert map1[51] == 53
+    assert map1[96] == 98
+    assert map1[97] == 99
+    assert map1[98] == 50
+    assert map1[99] == 51
+    print("test1 ok")
+
+
+# test1()
+
+with open("test5.txt", "r") as file:
+    lines = file.readlines()
+
+
 pos = 0
-seeds = get_row(lines[pos][7:])
-print(seeds)
+things = get_row(lines[pos][7:])
+print(things)
 print(lines[2])
 
-pos = 3
-i, seed2soil = get_map_nums(lines[pos:])
-print(seed2soil)
 
-pos += i + 2
-print(lines[pos - 1])
-i, soil2fertilizer = get_map_nums(lines[pos:])
-print(Map.from_seq(soil2fertilizer))
+def get_next_things(lines, pos, things):
+    i, map_nums = get_map_nums(lines[pos:])
+    map = Map(map_nums)
+    pos += i + 2
+    things = [map[i] for i in things]
+    return pos, things
+
+
+pos = 3
+
+while pos < len(lines):
+    pos, things = get_next_things(lines, pos, things)
+
+assert min(things) == 35
+print("test2 ok")
